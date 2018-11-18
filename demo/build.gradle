@@ -25,4 +25,6 @@ dependencies {
     implementation project(':cameraview')
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
+    implementation project(':lib_gui')
+    implementation project(':lib_curi_utility-release')
 }

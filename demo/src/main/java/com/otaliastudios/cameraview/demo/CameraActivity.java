@@ -1,22 +1,30 @@
 package com.otaliastudios.cameraview.demo;
 
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.example.lib_curi_utility.CuriUtility;
+import com.example.lib_gui.DragRectView;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
 import com.otaliastudios.cameraview.CameraView;
+import com.otaliastudios.cameraview.Frame;
+import com.otaliastudios.cameraview.FrameProcessor;
 import com.otaliastudios.cameraview.SessionType;
 import com.otaliastudios.cameraview.Size;
 
@@ -27,6 +35,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     private CameraView camera;
     private ViewGroup controlPanel;
+
 
     private boolean mCapturingPicture;
     private boolean mCapturingVideo;
@@ -44,6 +53,52 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
 
         camera = findViewById(R.id.camera);
+        camera.addFrameProcessor(new FrameProcessor() {
+            int counter=0;
+            @Override
+            public void process(@NonNull Frame frame) {
+                counter++;
+                String TAG= "isaac";
+                if ((null==frame) || (null==frame.getData())) {
+                    Log.d(TAG, "frame is null");
+                    return;
+                }
+                byte[] data = frame.getData();
+                int rotation = frame.getRotation();
+                long time = frame.getTime();
+                Size size = frame.getSize();
+                int format = frame.getFormat();
+
+                Log.d(TAG, String.format("%d, data.length=%d, size=(%d, %d), rotation=%d, format=%d", counter, data.length, size.getWidth(), size.getHeight(), rotation, format));
+                int resizedWidth= 320;
+                int resizedHeight=240;
+                byte[] data1= new byte[resizedHeight*resizedWidth*3>>1];
+                long startTime=System.currentTimeMillis();   //获取开始时间
+                CuriUtility.reduceYBytes(data, size.getWidth(), size.getHeight(), data1, resizedWidth, resizedHeight);
+                long endTime=System.currentTimeMillis(); //获取结束时间
+                System.out.println("降采样运行时间： "+(endTime-startTime)+"ms");
+
+                DragRectView dragRectView= findViewById(R.id.dragview);
+                if (dragRectView.isDrawing() && dragRectView.getmRect() != null) {
+                    Rect rect = dragRectView.getmRect();
+                    dragRectView.setDrawing(false);
+
+                    if (rect.right - rect.left > 10 && rect.bottom - rect.top > 10) {
+
+//                        tracker = new TrackerX();
+//                        tracker.Init(bytes, width, height, 1, rect);
+                        Log.d(TAG, "tracker is init.");
+                    }
+                }
+//                if (100==counter){
+//                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
+//                    Log.d(TAG, "save an image.");
+//                }
+
+
+
+            }
+        });
         camera.setLifecycleOwner(this);
         camera.addCameraListener(new CameraListener() {
             public void onCameraOpened(CameraOptions options) { onOpened(); }

@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <!-- Camera -->
     <com.otaliastudios.cameraview.CameraView
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,6 +29,13 @@
         app:cameraGestureScrollVertical="none"
         app:cameraJpegQuality="100"
         app:cameraSessionType="picture" />
+
+    <com.example.lib_gui.DragRectView
+        android:id="@+id/dragview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        />
 
     <!-- Controls -->
     <LinearLayout
