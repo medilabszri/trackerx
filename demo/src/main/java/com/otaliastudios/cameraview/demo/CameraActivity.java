@@ -84,6 +84,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 byte[] data1= new byte[resizedHeight*resizedWidth*3>>1];
                 long startTime=System.currentTimeMillis();   //获取开始时间
                 CuriUtility.reduceYBytes(data, size.getWidth(), size.getHeight(), data1, resizedWidth, resizedHeight);
+
+                //for debug
+                if (50==counter)
+                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
+
                 long endTime=System.currentTimeMillis(); //获取结束时间
                 System.out.println("降采样运行时间： "+(endTime-startTime)+"ms");
 
@@ -105,18 +110,24 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         tracker = new TrackerX();
                         tracker.Init(data1, resizedWidth, resizedHeight, 1, rect);
                         Log.d(TAG, "tracker is init.");
+                        Log.d(TAG, String.format("dragRectView size: %d %d", dragRectView.getWidth(), dragRectView.getHeight()));
+                        Log.d(TAG, String.format("camview size: %d %d", camera.getWidth(), camera.getHeight()));
                     }
                 }else {
+                    DrawRectView drawRectView=findViewById(R.id.drawView);
                     if (null!=tracker) {
                         Log.d(TAG, "tracking...");
                         Rect rect = tracker.Track(data1);
+
                         if (null!=rect) {
-                            Log.d(TAG, String.format("rect %d %d %d %d.", rect.left, rect.top, rect.right, rect.bottom));
-                            DrawRectView drawRectView=findViewById(R.id.drawView);
+
+                            Log.d(TAG, String.format("rect0 %d %d %d %d.", rect.left, rect.top, rect.right, rect.bottom));
                             drawRectView.drawRects(new Rect[]{rect}, resizedWidth, resizedHeight, drawRectView.getWidth(), drawRectView.getHeight());
                         }
-                        else
+                        else {
                             Log.d(TAG, "tracking return null.");
+                            drawRectView.cleanScreen();
+                        }
                     }
                 }
 //                if (100==counter){

@@ -15,11 +15,13 @@
         android:theme="@style/AppTheme">
 
         <activity
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:name=".CameraActivity"
-            android:theme="@style/Theme.MainActivity"
+
+
             android:hardwareAccelerated="true"
             android:configChanges="orientation|screenLayout|keyboardHidden"
-            android:screenOrientation="portrait">
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
