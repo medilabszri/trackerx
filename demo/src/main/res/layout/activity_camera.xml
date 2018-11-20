@@ -9,25 +9,24 @@
 
 
     <!-- Camera -->
-    <com.otaliastudios.cameraview.CameraView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.otaliastudios.cameraview.CameraView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/camera"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:keepScreenOn="true"
-        app:cameraPlaySounds="true"
-        app:cameraGrid="off"
+        app:cameraAudio="on"
         app:cameraCropOutput="false"
         app:cameraFacing="back"
         app:cameraFlash="off"
-        app:cameraAudio="on"
-        app:cameraGestureTap="focusWithMarker"
         app:cameraGestureLongTap="none"
         app:cameraGesturePinch="zoom"
         app:cameraGestureScrollHorizontal="exposureCorrection"
         app:cameraGestureScrollVertical="none"
+        app:cameraGestureTap="focusWithMarker"
+        app:cameraGrid="off"
         app:cameraJpegQuality="100"
+        app:cameraPlaySounds="true"
         app:cameraSessionType="picture" />
 
     <com.example.lib_gui.DrawRectView

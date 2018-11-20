@@ -47,6 +47,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private Size mCaptureNativeSize;
     private long mCaptureTime;
     Handler handler= null;
+    String TAG= "isaac";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +60,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         camera = findViewById(R.id.camera);
 
+
         camera.addFrameProcessor(new FrameProcessor() {
             int counter=0;
             TrackerX tracker= null;
             @Override
             public void process(@NonNull Frame frame) {
                 counter++;
-                String TAG= "isaac";
+
                 if ((null==frame) || (null==frame.getData())) {
                     Log.d(TAG, "frame is null");
                     return;
@@ -185,6 +187,17 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             ControlView view = (ControlView) group.getChildAt(i);
             view.onCameraOpened(camera);
         }
+
+        Log.d(TAG, String.format("camview size: %d %d", camera.getWidth(), camera.getHeight()));
+        for (int i:new int[]{R.id.dragview, R.id.drawView}
+             ) {
+            View v= findViewById(i);
+            ViewGroup.LayoutParams p = v.getLayoutParams();
+            p.width= camera.getWidth();
+            p.height= camera.getHeight();
+            v.setLayoutParams(p);
+        }
+
     }
 
     private void onPicture(byte[] jpeg) {
