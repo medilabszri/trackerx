@@ -27,4 +27,5 @@ dependencies {
     implementation "com.android.support:design:$supportLibVersion"
     implementation project(':lib_gui')
     implementation project(':lib_curi_utility-release')
+    implementation project(':lib_tracker-release')
 }

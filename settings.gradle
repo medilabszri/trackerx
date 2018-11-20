@@ -1,1 +1,1 @@
-include ':demo', ':cameraview', ':lib_gui', ':lib_curi_utility-release'
+include ':demo', ':cameraview', ':lib_gui', ':lib_curi_utility-release', ':lib_tracker-release'

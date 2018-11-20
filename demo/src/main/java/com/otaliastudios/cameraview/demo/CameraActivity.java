@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.design.widget.BottomSheetBehavior;
@@ -17,6 +18,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.curi.tracker.lib.TrackerX;
 import com.example.lib_curi_utility.CuriUtility;
 import com.example.lib_gui.DragRectView;
 import com.otaliastudios.cameraview.CameraListener;
@@ -43,6 +45,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     // To show stuff in the callback
     private Size mCaptureNativeSize;
     private long mCaptureTime;
+    Handler handler= null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +54,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         setContentView(R.layout.activity_camera);
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
+        handler= new Handler();
 
         camera = findViewById(R.id.camera);
+
         camera.addFrameProcessor(new FrameProcessor() {
             int counter=0;
+            TrackerX tracker= null;
             @Override
             public void process(@NonNull Frame frame) {
                 counter++;
@@ -72,23 +78,35 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d(TAG, String.format("%d, data.length=%d, size=(%d, %d), rotation=%d, format=%d", counter, data.length, size.getWidth(), size.getHeight(), rotation, format));
                 int resizedWidth= 320;
                 int resizedHeight=240;
+                double ratioWidth= (double)(size.getWidth())/resizedWidth;
+                double ratioHeight= (double)(size.getHeight())/resizedHeight;
                 byte[] data1= new byte[resizedHeight*resizedWidth*3>>1];
                 long startTime=System.currentTimeMillis();   //获取开始时间
                 CuriUtility.reduceYBytes(data, size.getWidth(), size.getHeight(), data1, resizedWidth, resizedHeight);
                 long endTime=System.currentTimeMillis(); //获取结束时间
                 System.out.println("降采样运行时间： "+(endTime-startTime)+"ms");
 
-                DragRectView dragRectView= findViewById(R.id.dragview);
+                final DragRectView dragRectView= findViewById(R.id.dragview);
                 if (dragRectView.isDrawing() && dragRectView.getmRect() != null) {
                     Rect rect = dragRectView.getmRect();
-                    dragRectView.setDrawing(false);
+                    rect.left/=ratioWidth;
+                    rect.right/=ratioWidth;
+                    rect.top/=ratioHeight;
+                    rect.bottom/=ratioHeight;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            dragRectView.setDrawing(false);
+                        }
+                    });
 
                     if (rect.right - rect.left > 10 && rect.bottom - rect.top > 10) {
-
-//                        tracker = new TrackerX();
-//                        tracker.Init(bytes, width, height, 1, rect);
+                        tracker = new TrackerX();
+                        tracker.Init(data1, resizedWidth, resizedHeight, 1, rect);
                         Log.d(TAG, "tracker is init.");
                     }
+                }else {
+
                 }
 //                if (100==counter){
 //                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
