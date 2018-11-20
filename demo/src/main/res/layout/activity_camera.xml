@@ -30,6 +30,12 @@
         app:cameraJpegQuality="100"
         app:cameraSessionType="picture" />
 
+    <com.example.lib_gui.DrawRectView
+        android:id="@+id/drawView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        />
     <com.example.lib_gui.DragRectView
         android:id="@+id/dragview"
         android:layout_width="match_parent"

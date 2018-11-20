@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.curi.tracker.lib.TrackerX;
 import com.example.lib_curi_utility.CuriUtility;
 import com.example.lib_gui.DragRectView;
+import com.example.lib_gui.DrawRectView;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
@@ -106,7 +107,17 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         Log.d(TAG, "tracker is init.");
                     }
                 }else {
-
+                    if (null!=tracker) {
+                        Log.d(TAG, "tracking...");
+                        Rect rect = tracker.Track(data1);
+                        if (null!=rect) {
+                            Log.d(TAG, String.format("rect %d %d %d %d.", rect.left, rect.top, rect.right, rect.bottom));
+                            DrawRectView drawRectView=findViewById(R.id.drawView);
+                            drawRectView.drawRects(new Rect[]{rect}, resizedWidth, resizedHeight, drawRectView.getWidth(), drawRectView.getHeight());
+                        }
+                        else
+                            Log.d(TAG, "tracking return null.");
+                    }
                 }
 //                if (100==counter){
 //                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
