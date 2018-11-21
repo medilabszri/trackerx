@@ -46,8 +46,8 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     // To show stuff in the callback
     private Size mCaptureNativeSize;
     private long mCaptureTime;
-    Handler handler= null;
-    String TAG= "isaac";
+    Handler handler = null;
+    String TAG = "isaac";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +56,16 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         setContentView(R.layout.activity_camera);
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
-        handler= new Handler();
-
         camera = findViewById(R.id.camera);
-
-
+        handler = new Handler();
         camera.addFrameProcessor(new FrameProcessor() {
-            int counter=0;
-            TrackerX tracker= null;
+
+            TrackerX tracker = null;
+
             @Override
             public void process(@NonNull Frame frame) {
-                counter++;
 
-                if ((null==frame) || (null==frame.getData())) {
+                if ((null == frame) || (null == frame.getData())) {
                     Log.d(TAG, "frame is null");
                     return;
                 }
@@ -77,33 +74,27 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 long time = frame.getTime();
                 Size size = frame.getSize();
                 int format = frame.getFormat();
+                Log.d(TAG, String.format("%d, data.length=%d, size=(%d, %d), rotation=%d, format=%d",
+                        time, data.length, size.getWidth(), size.getHeight(), rotation, format));
 
-                Log.d(TAG, String.format("%d, data.length=%d, size=(%d, %d), rotation=%d, format=%d", counter, data.length, size.getWidth(), size.getHeight(), rotation, format));
-                int resizedWidth= 320;
-                int resizedHeight=240;
-                double ratio_Width_image_resized= (double)(size.getWidth())/resizedWidth;
-                double ratio_Height_image_resized= (double)(size.getHeight())/resizedHeight;
-
-                double ratio_Width_preview_resized= (double)(camera.getWidth())/resizedWidth;
-                double ratio_Height_preview_resized= (double)(camera.getHeight())/resizedHeight;
-                byte[] data1= new byte[resizedHeight*resizedWidth*3>>1];
-                long startTime=System.currentTimeMillis();   //获取开始时间
+                int resizedWidth = 320;
+                int resizedHeight = 240;
+                double ratio_Width_preview_resized = (double) (camera.getWidth()) / resizedWidth;
+                double ratio_Height_preview_resized = (double) (camera.getHeight()) / resizedHeight;
+                byte[] data1 = new byte[resizedHeight * resizedWidth * 3 >> 1];
+                long startTime = System.currentTimeMillis();   //获取开始时间
                 CuriUtility.reduceYBytes(data, size.getWidth(), size.getHeight(), data1, resizedWidth, resizedHeight);
 
-                //for debug
-                if (50==counter)
-                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
+                long endTime = System.currentTimeMillis(); //获取结束时间
+                System.out.println("降采样运行时间： " + (endTime - startTime) + "ms");
 
-                long endTime=System.currentTimeMillis(); //获取结束时间
-                System.out.println("降采样运行时间： "+(endTime-startTime)+"ms");
-
-                final DragRectView dragRectView= findViewById(R.id.dragview);
+                final DragRectView dragRectView = findViewById(R.id.dragview);
                 if (dragRectView.isDrawing() && dragRectView.getmRect() != null) {
                     Rect rect = dragRectView.getmRect();
-                    rect.left/=ratio_Width_preview_resized;
-                    rect.right/=ratio_Width_preview_resized;
-                    rect.top/=ratio_Height_preview_resized;
-                    rect.bottom/=ratio_Height_preview_resized;
+                    rect.left /= ratio_Width_preview_resized;
+                    rect.right /= ratio_Width_preview_resized;
+                    rect.top /= ratio_Height_preview_resized;
+                    rect.bottom /= ratio_Height_preview_resized;
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -118,36 +109,31 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                         Log.d(TAG, String.format("dragRectView size: %d %d", dragRectView.getWidth(), dragRectView.getHeight()));
                         Log.d(TAG, String.format("camview size: %d %d", camera.getWidth(), camera.getHeight()));
                     }
-                }else {
-                    DrawRectView drawRectView=findViewById(R.id.drawView);
-                    if (null!=tracker) {
+                } else {
+                    DrawRectView drawRectView = findViewById(R.id.drawView);
+                    if (null != tracker) {
                         Log.d(TAG, "tracking...");
                         Rect rect = tracker.Track(data1);
-
-                        if (null!=rect) {
-
+                        if (null != rect) {
                             Log.d(TAG, String.format("rect0 %d %d %d %d.", rect.left, rect.top, rect.right, rect.bottom));
                             drawRectView.drawRects(new Rect[]{rect}, resizedWidth, resizedHeight, drawRectView.getWidth(), drawRectView.getHeight());
-                        }
-                        else {
+                        } else {
                             Log.d(TAG, "tracking return null.");
                             drawRectView.cleanScreen();
                         }
                     }
                 }
-//                if (100==counter){
-//                    CuriUtility.saveBytetoFile(data1, resizedWidth, resizedHeight);
-//                    Log.d(TAG, "save an image.");
-//                }
-
-
-
             }
         });
         camera.setLifecycleOwner(this);
         camera.addCameraListener(new CameraListener() {
-            public void onCameraOpened(CameraOptions options) { onOpened(); }
-            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
+            public void onCameraOpened(CameraOptions options) {
+                onOpened();
+            }
+
+            public void onPictureTaken(byte[] jpeg) {
+                onPicture(jpeg);
+            }
 
             @Override
             public void onVideoTaken(File video) {
@@ -192,12 +178,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         Log.d(TAG, String.format("camview size: %d %d", camera.getWidth(), camera.getHeight()));
-        for (int i:new int[]{R.id.dragview, R.id.drawView}
-             ) {
-            View v= findViewById(i);
+        for (int i : new int[]{R.id.dragview, R.id.drawView}
+                ) {
+            View v = findViewById(i);
             ViewGroup.LayoutParams p = v.getLayoutParams();
-            p.width= camera.getWidth();
-            p.height= camera.getHeight();
+            p.width = camera.getWidth();
+            p.height = camera.getHeight();
             v.setLayoutParams(p);
         }
 
@@ -207,7 +193,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         mCapturingPicture = false;
         long callbackTime = System.currentTimeMillis();
         if (mCapturingVideo) {
-            message("Captured while taking video. Size="+mCaptureNativeSize, false);
+            message("Captured while taking video. Size=" + mCaptureNativeSize, false);
             return;
         }
 
@@ -236,10 +222,18 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.edit: edit(); break;
-            case R.id.capturePhoto: capturePhoto(); break;
-            case R.id.captureVideo: captureVideo(); break;
-            case R.id.toggleCamera: toggleCamera(); break;
+            case R.id.edit:
+                edit();
+                break;
+            case R.id.capturePhoto:
+                capturePhoto();
+                break;
+            case R.id.captureVideo:
+                captureVideo();
+                break;
+            case R.id.toggleCamera:
+                toggleCamera();
+                break;
         }
     }
 
