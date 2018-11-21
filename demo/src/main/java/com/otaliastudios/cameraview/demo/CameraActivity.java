@@ -81,8 +81,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d(TAG, String.format("%d, data.length=%d, size=(%d, %d), rotation=%d, format=%d", counter, data.length, size.getWidth(), size.getHeight(), rotation, format));
                 int resizedWidth= 320;
                 int resizedHeight=240;
-                double ratioWidth= (double)(size.getWidth())/resizedWidth;
-                double ratioHeight= (double)(size.getHeight())/resizedHeight;
+                double ratio_Width_image_resized= (double)(size.getWidth())/resizedWidth;
+                double ratio_Height_image_resized= (double)(size.getHeight())/resizedHeight;
+
+                double ratio_Width_preview_resized= (double)(camera.getWidth())/resizedWidth;
+                double ratio_Height_preview_resized= (double)(camera.getHeight())/resizedHeight;
                 byte[] data1= new byte[resizedHeight*resizedWidth*3>>1];
                 long startTime=System.currentTimeMillis();   //获取开始时间
                 CuriUtility.reduceYBytes(data, size.getWidth(), size.getHeight(), data1, resizedWidth, resizedHeight);
@@ -97,10 +100,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 final DragRectView dragRectView= findViewById(R.id.dragview);
                 if (dragRectView.isDrawing() && dragRectView.getmRect() != null) {
                     Rect rect = dragRectView.getmRect();
-                    rect.left/=ratioWidth;
-                    rect.right/=ratioWidth;
-                    rect.top/=ratioHeight;
-                    rect.bottom/=ratioHeight;
+                    rect.left/=ratio_Width_preview_resized;
+                    rect.right/=ratio_Width_preview_resized;
+                    rect.top/=ratio_Height_preview_resized;
+                    rect.bottom/=ratio_Height_preview_resized;
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
