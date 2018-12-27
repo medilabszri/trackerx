@@ -1,3 +1,23 @@
+# Please refer to CameraActivity.java for the way of calling the tracker
+
+```
+//to create an instance
+tracker = new TrackerX();
+
+//to initialize the track by giving an ROI
+tracker.Init(data1, resizedWidth, resizedHeight, 1, rect);
+
+//to track a frame
+Rect rect = tracker.Track(data1);
+
+```
+# some notes
+The tracker aar is from another [project](http://git.curi.hk/huzexi/AndroidTracker).  
+Please use an updated aar package (by replacing the old one in the project).
+
+
+# Following is the original readme.md of the base camera project
+
 [![Build Status](https://travis-ci.org/natario1/CameraView.svg?branch=master)](https://travis-ci.org/natario1/CameraView)
 [![Code Coverage](https://codecov.io/gh/natario1/CameraView/branch/master/graph/badge.svg)](https://codecov.io/gh/natario1/CameraView)
 
